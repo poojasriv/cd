@@ -1,0 +1,167 @@
+1...
+%%
+[1-9][0-9]{9} {printf("\nMobile Number Valid\n");}
+.+ {printf("\nMobile Number Invalid\n");}
+%%
+int main()
+{
+	printf("\nEnter Mobile Number : ");
+	yylex();
+	printf("\n");
+	return 0;
+}
+int yywrap()
+{ }
+
+
+2....
+% { 
+  int counter = 0; % 
+} 
+  
+% 
+% [a - zA - Z] + { 
+  if (yyleng > counter) { 
+    counter = yyleng; 
+  } 
+} % 
+% 
+  
+main() { 
+  yylex(); 
+  printf("largest: %d", counter); 
+  printf("\n"); 
+} 
+
+3.....
+%{
+int tags;
+%}
+%%
+"<"[^>]*>  { tags++; printf("%s \n", yytext); }
+.|\n { }
+%%
+int yywrap(void) {
+return 1; }
+int main(void)
+{
+FILE *f;
+char file[10];
+printf("Enter File Name : ");
+scanf("%s",file);
+f = fopen(file,"r");
+yyin = f;
+yylex();
+printf("\n Number of html tags: %d",tags);
+fclose(yyin);  
+}
+
+
+4.....
+#include<stdio.h>
+#include<conio.h>
+#include<string.h>
+char input[100];
+int i,l;
+void main()
+{
+//clrscr();
+printf("\nRecursive descent parsing for the following grammar\n"); printf("\nE->TE'\nE'->+TE'/@\nT->FT'\nT'->*FT'/@\nF->(E)/ID\n"); printf("\nEnter the string to be checked:"); gets(input);
+if(E())
+{
+if(input[i+1]=='\0')
+printf("\nString is accepted");
+else
+printf("\nString is not accepted");
+}
+else
+printf("\nString not accepted");
+getch();
+}
+E()
+{
+if(T())
+{
+if(EP())
+return(1);
+else
+return(0);
+}
+else
+return(0);
+}
+EP()
+{
+if(input[i]=='+')
+{
+i++;
+if(T())
+{
+if(EP())
+return(1);
+else
+return(0);
+}
+else
+return(0);
+}
+else
+return(1);
+}
+T()
+{
+if(F())
+{
+if(TP())
+return(1);
+else
+return(0);
+}
+else
+return(0);
+}
+TP()
+{
+if(input[i]=='*')
+{
+i++;
+if(F())
+{
+if(TP())
+return(1);
+else
+return(0);
+}
+else
+return(0);
+}
+else
+return(1);
+}
+F()
+{
+if(input[i]=='(')
+{
+i++;
+if(E())
+{
+if(input[i]==')')
+{
+i++;
+return(1);
+}
+else
+return(0);
+}
+else
+return(0);
+}
+else if(input[i]>='a'&&input[i]<='z'||input[i]>='A'&&input[i]<='Z')
+{
+i++;
+return(1);
+}
+else
+return(0);
+}
+
