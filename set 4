@@ -1,0 +1,205 @@
+1..
+#include<stdio.h>
+#include<ctype.h>
+#include<string.h>
+int main()
+{
+	int i,ic=0,m,cc=0,oc=0,j;
+	char b[30],operators[30],identifiers[30],constants[30];
+	printf("enter the string : ");
+	scanf("%[^\n]s",&b);
+	for(i=0;i<strlen(b);i++)
+	{
+    	if(isspace(b[i]))
+		{
+    	    continue;
+    	}
+    	else if(isalpha(b[i]))
+		{
+        	identifiers[ic] =b[i];
+        	ic++;
+    	}
+    	else if(isdigit(b[i]))
+		{
+        	m=(b[i]-'0');
+        	i=i+1;
+        	while(isdigit(b[i]))
+			{
+            	m=m*10 + (b[i]-'0');
+            	i++;
+        	}
+        	i=i-1;
+        	constants[cc]=m;
+        	cc++;
+    	}
+    	else
+		{
+        	if(b[i]=='*')
+			{
+            	operators[oc]='*';
+            	oc++;
+        	}
+        	else if(b[i]=='-')
+			{
+            	operators[oc]='-';
+            	oc++;
+        	}
+        	else if(b[i]=='+')
+			{
+            	operators[oc]='+';
+            	oc++;
+        	}
+         	else if(b[i]=='=')
+			{
+            	operators[oc]='=';
+            	oc++;
+        	}
+  		}
+	}
+    printf(" identifiers : ");
+     for(j=0;j<ic;j++)
+	 {
+        printf("%c ",identifiers[j]);
+     }
+    printf("\n constants : ");
+     for(j=0;j<cc;j++)
+	 {
+        printf("%d ",constants[j]);
+     }
+    printf("\n operators : ");
+      for(j=0;j<oc;j++)
+	  {
+        printf("%c ",operators[j]);
+      }
+}
+
+
+2....
+%{  
+#include <stdio.h>  
+#include <string.h>  
+    int operators_count = 0, operands_count = 0, valid = 1, top = -1, l = 0, j = 0;  
+    char operands[10][10], operators[10][10], stack[100];  
+%}  
+%% 
+"(" {  
+    top++;  
+    stack[top] = '(';  
+}  
+"{" { 
+    top++;  
+    stack[top] = '{';  
+}  
+"[" {  
+    top++;  
+    stack[top] = '[';  
+}  
+")" {  
+    if (stack[top] != '(') {  
+        valid = 0;      
+    }  
+    else if(operands_count>0 && (operands_count-operators_count)!=1){ 
+        valid=0; 
+    } 
+    else{ 
+        top--; 
+        operands_count=1; 
+        operators_count=0; 
+    }  
+}  
+"}" {  
+    if (stack[top] != '{') {  
+        valid = 0;      
+    }  
+    else if(operands_count>0 && (operands_count-operators_count)!=1){ 
+        valid=0; 
+    } 
+    else{ 
+        top--; 
+        operands_count=1; 
+        operators_count=0; 
+    }  
+}  
+"]" {  
+    if (stack[top] != '[') {  
+        valid = 0;  
+    }  
+    else if(operands_count>0 && (operands_count-operators_count)!=1){ 
+        valid=0; 
+    } 
+    else{ 
+        top--; 
+        operands_count=1; 
+        operators_count=0; 
+    }  
+          
+}  
+"+"|"-"|"*"|"/" {  
+    operators_count++;  
+    strcpy(operators[l], yytext);  
+    l++;  
+}  
+[0-9]+|[a-zA-Z][a-zA-Z0-9_]* {  
+    operands_count++;  
+    strcpy(operands[j], yytext);  
+    j++;  
+}  
+%%  
+  
+  
+int yywrap()  
+{  
+    return 1;  
+}  
+int main()  
+{  
+    int k;  
+    printf("Enter the arithmetic expression: ");  
+    yylex();  
+  
+    if (valid == 1 && top == -1) {  
+        printf("\nValid Expression\n");  
+    }  
+    else
+        printf("\nInvalid Expression\n");  
+  
+    return 0; 
+}  
+3....
+%%
+[0-9]+ {printf("\nValid digit \n");} 
+.* printf("\nInvalid digit\n");
+%%
+int yywrap(){}
+int main()											
+{
+yylex();
+return 0;
+}
+
+
+4...
+digit [0-9]
+letter [A-Za-z]
+%{
+int count_id,count_key;
+%}
+%%
+(stdio.h|conio.h) { printf("%s is a standard library\n",yytext); }
+(include|void|main|printf|int) { printf("%s is a keyword\n",yytext); count_key++; }
+{letter}({letter}|{digit})*  { printf("%s is a identifier\n", yytext); count_id++; }
+{digit}+  { printf("%s is a number\n", yytext); }
+\"(\\.|[^"\\])*\"  { printf("%s is a string literal\n", yytext); }
+.|\n {  }
+%%
+int yywrap(void) {
+return 1;
+}
+int main(int argc, char *argv[]) {
+yyin = fopen(argv[1], "r");
+yylex();
+printf("number of identifiers = %d\n", count_id);
+printf("number of keywords = %d\n", count_key);
+fclose(yyin);
+}
+
